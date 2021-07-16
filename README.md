@@ -11,6 +11,9 @@ in a terminal.
 The global variable `engine` is given. Other objects can be accessed from `engine` as public
 or private members.
 
+Alternatively, `plover-debugging-console-connect qtconsole` can be used to launch a console-style application using Qt.
+See documentation of `jupyter qtconsole` for more details.
+
 ### Note
 
 * Once started, the kernel is not stopped until Plover exits.
