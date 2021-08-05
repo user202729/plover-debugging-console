@@ -1,6 +1,11 @@
 # plover-debugging-console
 A IPython debugging console for Plover.
 
+See also:
+
+* [`plover-run-py` plugin](https://github.com/user202729/plover-run-py) for
+executing a Python command with a stroke.
+
 ### Usage
 
 * Install the plugin.
@@ -18,6 +23,7 @@ See documentation of `jupyter qtconsole` for more details.
 
 * Once started, the kernel is not stopped until Plover exits.
 * Any `print` commands are printed on Plover's console, not IPython's console.
+* On some operating systems, the plugin may set `PAGER` environment variable. (see [issue #2 of `plover-run-shell` repository](https://github.com/user202729/plover_run_shell/issues/2))
 
 ### Implementation details
 
