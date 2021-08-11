@@ -4,7 +4,7 @@ A IPython debugging console for Plover.
 See also:
 
 * [`plover-run-py` plugin](https://github.com/user202729/plover-run-py) for
-executing a Python command with a stroke.
+executing a Python command with a stroke, or from the command-line.
 
 ### Usage
 
