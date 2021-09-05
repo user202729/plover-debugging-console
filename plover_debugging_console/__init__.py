@@ -32,7 +32,7 @@ class Main:
 		connection_path_container.unlink()
 
 
-def connect():
+def connect()->None:
 	import subprocess
 	import argparse
 	parser=argparse.ArgumentParser(usage="Connect to existing Plover debugging console kernel.")
@@ -78,9 +78,10 @@ def execute()->None:
 
 	file_=Path(args.file).absolute()
 	assert file_.is_file()
-	file=str(file_).translate(str.maketrans({
+	file=str(file_)
+	file=file.translate(str.maketrans({
 		x: '\\'+x for x in r'\"'
-		}))
+		}))  # type: ignore
 	command+=f'%run "{file}"'
 
 	manager.client().execute(command)
