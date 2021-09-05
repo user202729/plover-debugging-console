@@ -50,17 +50,26 @@ def connect()->None:
 def execute()->None:
 	import argparse
 	parser=argparse.ArgumentParser(usage="Execute Python code in the existing Plover debugging console kernel.")
+
 	parser.add_argument("-s", "--set-args", action="store",
-			default="_args",
-			help="Where to store the command-line arguments.")
+			default="",
+			help="Where to store the command-line arguments for --command.")
 	parser.add_argument("-c", "--command", action="store", help="Command to execute. "
-			"If provided together with `file` argument, this will be put first.")
+			"If provided together with `file` argument, this will be put first. "
+			"This is run before the redirection.")
 	parser.add_argument("--suppress-newline", action="store_true",
 			help="Suppress inserted newline at the end of command, if --command is provided.")
+
+	parser.add_argument("--redirect-streams", action="store_true", default=True,
+			help="Redirect stdout/stderr for file execution. Does not affect thrown errors.")
+	parser.add_argument("--no-redirect-streams", action="store_false", dest="redirect_streams")
 	parser.add_argument("file",
 			help="File to execute. If empty, no file will be executed.")
-	parser.add_argument("args", nargs="*", help="Arguments. See --set-args")
+	parser.add_argument("args", nargs="*",
+			help="Arguments. See --set-args. For file execution it's stored in sys.argv.")
 	args=parser.parse_args()
+
+	if args.redirect_streams: assert args.file, "--redirect-streams requires --file"
 
 	from jupyter_client.manager import KernelManager  # type: ignore
 	manager=KernelManager(connection_file=connection_path_container.read_text())
@@ -68,12 +77,15 @@ def execute()->None:
 
 	command=""
 
-	if args.set_args:
-		if args.set_args.startswith("sys."):
-			command+="import sys\n"
-		command+=f"{args.set_args}={args.args!r}\n"
+	escape_dict=str.maketrans({
+			x: '\\'+x for x in r'\"'
+			})  # type: ignore
 
 	if args.command:
+		if args.set_args:
+			if args.set_args.startswith("sys."):
+				command+="import sys\n"
+			command+=f"{args.set_args}={args.args!r}\n"
 		command+=args.command
 		if not args.suppress_newline:
 			command+='\n'
@@ -81,10 +93,53 @@ def execute()->None:
 	if args.file:
 		file_=Path(args.file).absolute()
 		assert file_.is_file()
-		file=str(file_)
-		file=file.translate(str.maketrans({
-			x: '\\'+x for x in r'\"'
-			}))  # type: ignore
-		command+=f'%run "{file}"'
+		command_escaped: str=' '.join(
+				'"' + x.translate(escape_dict) + '"'
+				for x in
+				[str(file_)] + args.args
+				)
+		if args.redirect_streams:
+			from multiprocessing.connection import Listener
+			import random
+			key=bytes((random.randint(0, 255) for _ in range(16)))
+			
+			for attempt_left in range(10-1, -1, -1):
+				port=random.randint(4096, 8192)
+				if port in (5000, 8000, 8080): continue  # exclude some common ports
+				address=("127.0.0.1", port)
+				try:
+					listener=Listener(address, "AF_INET", authkey=key)
+				except OSError:
+					if attempt_left==0: raise
+					continue
+				break
+
+			command+=f'''\
+try:
+	# set up stdout/stderr redirection
+	import sys
+	import io
+	sys.stdout=io.StringIO()
+	sys.stderr=io.StringIO()
+
+	%run {command_escaped}
+finally:
+	# send the data
+	from multiprocessing.connection import Client
+	connection=Client({address!r}, "AF_INET", authkey={key!r})
+	connection.send((sys.stdout.getvalue(), sys.stderr.getvalue()))
+	connection.close()
+
+	# restore stdout
+	sys.stdout=sys.__stdout__
+'''
+		else:
+			command+=f'%run {command_escaped}'
 
 	manager.client().execute(command)
+
+	if args.redirect_streams:
+		import sys
+		stdout_content, stderr_content=listener.accept().recv()
+		sys.stdout.write(stdout_content)
+		sys.stderr.write(stderr_content)

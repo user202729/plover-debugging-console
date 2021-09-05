@@ -25,6 +25,9 @@ Or `plover-debugging-console-execute` can be used to execute a file non-interact
 
 * Once started, the kernel is not stopped until Plover exits.
 * The session (kernel, global variables) are persistent, and shared between consoles.
+  
+  However, `plover-debugging-console-execute <file>` uses a separate environment, see
+  documentation of `%run` IPython magic command.
 * Any `print` commands are printed on Plover's console, not IPython's console.
 * Error messages might be hidden (if `plover-debugging-console-execute` is used),
   or displayed in a different console.
