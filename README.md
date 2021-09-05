@@ -19,10 +19,17 @@ or private members.
 Alternatively, `plover-debugging-console-connect qtconsole` can be used to launch a console-style application using Qt.
 See documentation of `jupyter qtconsole` for more details.
 
+Or `plover-debugging-console-execute` can be used to execute a file non-interactively. See note below.
+
 ### Note
 
 * Once started, the kernel is not stopped until Plover exits.
+* The session (kernel, global variables) are persistent, and shared between consoles.
 * Any `print` commands are printed on Plover's console, not IPython's console.
+* Error messages might be hidden (if `plover-debugging-console-execute` is used),
+  or displayed in a different console.
+
+  To view the error messages, open an interactive console.
 * On some operating systems, the plugin may set `PAGER` environment variable. (see [issue #2 of `plover-run-shell` repository](https://github.com/user202729/plover_run_shell/issues/2))
 
 ### Implementation details
