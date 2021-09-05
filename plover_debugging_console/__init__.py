@@ -1,4 +1,3 @@
-from background_zmq_ipython import init_ipython_kernel, IPythonBackgroundKernelWrapper  # type: ignore
 import tempfile
 from typing import Optional
 from pathlib import Path
@@ -10,10 +9,12 @@ connection_path_container=Path(tempfile.gettempdir())/"plover_debugging_console_
 
 class Main:
 	def __init__(self, engine)->None:
+		from background_zmq_ipython import IPythonBackgroundKernelWrapper  # type: ignore
 		self._engine=engine
 		self._kernel_wrapper: Optional[IPythonBackgroundKernelWrapper]=None
 
 	def start(self)->None:
+		from background_zmq_ipython import init_ipython_kernel  # type: ignore
 		logging.getLogger("plover").propagate=False
 		logging.getLogger("plover-strokes").propagate=False
 		# tornado package calls logging.basicConfig() which creates a logger at the root level
