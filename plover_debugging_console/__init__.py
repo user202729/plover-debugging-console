@@ -57,7 +57,8 @@ def execute()->None:
 			"If provided together with `file` argument, this will be put first.")
 	parser.add_argument("--suppress-newline", action="store_true",
 			help="Suppress inserted newline at the end of command, if --command is provided.")
-	parser.add_argument("file", help="File to execute.")
+	parser.add_argument("file",
+			help="File to execute. If empty, no file will be executed.")
 	parser.add_argument("args", nargs="*", help="Arguments. See --set-args")
 	args=parser.parse_args()
 
@@ -77,12 +78,13 @@ def execute()->None:
 		if not args.suppress_newline:
 			command+='\n'
 
-	file_=Path(args.file).absolute()
-	assert file_.is_file()
-	file=str(file_)
-	file=file.translate(str.maketrans({
-		x: '\\'+x for x in r'\"'
-		}))  # type: ignore
-	command+=f'%run "{file}"'
+	if args.file:
+		file_=Path(args.file).absolute()
+		assert file_.is_file()
+		file=str(file_)
+		file=file.translate(str.maketrans({
+			x: '\\'+x for x in r'\"'
+			}))  # type: ignore
+		command+=f'%run "{file}"'
 
 	manager.client().execute(command)
