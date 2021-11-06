@@ -42,3 +42,4 @@ or `jupyter console --existing <file>`.
 * The IPython/Jupyter connection file path is stored in `connection_path_container`, which is
 `plover_debugging_console_path` in the temp folder in the current version.
 * `background_zmq_ipython` package is used, which requires `jupyter`
+* See https://stackoverflow.com/a/68769973/5267751 for the method used in `plover-debugging-console-execute`.
