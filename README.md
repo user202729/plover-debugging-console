@@ -42,4 +42,8 @@ or `jupyter console --existing <file>`.
 * The IPython/Jupyter connection file path is stored in `connection_path_container`, which is
 `plover_debugging_console_path` in the temp folder in the current version.
 * `background_zmq_ipython` package is used, which requires `jupyter`
+* Regarding `PAGER`, `GIT_PAGER`, `TERM`, `CLICOLOR` environment variables being set: Either
+   * unset/reset them manually, or
+   * update to a sufficiently new version of package `background-zmq-ipython`, at least commit [14d862848b7f5692412093642181718c29f57cad](https://github.com/albertz/background-zmq-ipython/commit/14d862848b7f5692412093642181718c29f57cad).
+   (version currently not on PyPI)
 * See https://stackoverflow.com/a/68769973/5267751 for the method used in `plover-debugging-console-execute`.
