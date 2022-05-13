@@ -36,6 +36,7 @@ class Main:
 def connect()->None:
 	import subprocess
 	import argparse
+	import sys
 	parser=argparse.ArgumentParser(usage="Connect to existing Plover debugging console kernel.")
 	parser.add_argument("command", nargs="?", choices=["qtconsole", "console"], default="console")
 	args=parser.parse_args()
