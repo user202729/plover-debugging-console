@@ -40,7 +40,7 @@ def connect()->None:
 	parser.add_argument("command", nargs="?", choices=["qtconsole", "console"], default="console")
 	args=parser.parse_args()
 	subprocess.run([
-		"jupyter",
+		sys.executable, "-m", "jupyter",
 		args.command,
 		"--existing",
 		connection_path_container.read_text()
