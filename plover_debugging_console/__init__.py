@@ -39,13 +39,15 @@ def connect()->None:
 	import sys
 	parser=argparse.ArgumentParser(usage="Connect to existing Plover debugging console kernel.")
 	parser.add_argument("command", nargs="?", choices=["qtconsole", "console"], default="console")
+	parser.add_argument("--indirect-jupyter", action="store_true", help="Invoke Jupyter through `python -m jupyter <subcommand>`. Try this if the default does not work.")
 	args=parser.parse_args()
-	subprocess.run([
-		sys.executable, "-m", "jupyter",
-		args.command,
-		"--existing",
-		connection_path_container.read_text()
-		])
+	if args.indirect_jupyter:
+		command_part = ["jupyter", args.command]
+	else:
+		command_part = [{"console": "jupyter_console", "qtconsole": "qtconsole"}[args.command]]
+	subprocess.run(
+			[sys.executable, "-m"] + command_part + ["--existing", connection_path_container.read_text()]
+			)
 
 
 def execute()->None:
