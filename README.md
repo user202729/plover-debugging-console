@@ -21,6 +21,14 @@ See documentation of `jupyter qtconsole` for more details.
 
 Or `plover-debugging-console-execute` can be used to execute a file non-interactively. See note below.
 
+### Known issues
+
+Those errors can be fixed by installing the latest version of `background_zmq_ipython` manually on GitHub. Refer to
+https://github.com/openstenoproject/plover/wiki/Manually-Installing-Plugins for instruction.
+
+* https://github.com/albertz/background-zmq-ipython/issues/13
+* https://github.com/user202729/plover-debugging-console/issues/1#issuecomment-1003654835
+
 ### Note
 
 * Once started, the kernel is not stopped until Plover exits.
